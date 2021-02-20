@@ -250,13 +250,14 @@ def getparamtabmatrix(
     returntabsec = False. If True then return tabsec rather than listoflists
     
     """
-    numrow = len(paramlist)
-    numcol = len(sm_models)
-
     if paramlist == 'def':
         paramlist = ['nobs']
         paramnames = ['N']
         paramdecimal = [0]
+
+    # need to do after replace paramlist = 'def'
+    numrow = len(paramlist)
+    numcol = len(sm_models)
 
     # verify correct lengths
     if not isinstance(paramdecimal, list):
@@ -321,7 +322,7 @@ def getsmresultstable(
     # format options - param
     paramnames = None, paramdecimal = None,
     # format options - other
-    ynames = None, colalign = None, hlines_tabsec = 'all',
+    ynames = None, colalign = 'def', hlines_tabsec = 'all',
     # additional list of lists before/between/after other matrices
     beforelofl = None, betweenlofl = None, afterlofl = None,
     # print options
@@ -414,6 +415,9 @@ def getsmresultstable(
     # full listoflists
     if printtab is True:
         printlofl(lofl_all, maxcolsize = printmaxcolsize)
+
+    if colalign == 'def':
+        colalign = 'l' + 'c' * numcol
 
     # CONVERT ALL LISTS TO TABSECS
     tabular = mergetabsecs(tabsecs_all, colalign = colalign, hlines = hlines_tabsec, savename = savename)
