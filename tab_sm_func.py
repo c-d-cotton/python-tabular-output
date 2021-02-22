@@ -337,7 +337,7 @@ def getsmresultstable(
     paramlist = 'def': list of properties of the fit() method that I wish to include in the parameter table e.g. nobs, ess, aic. If None, include nothing. If 'def', include 'nobs'
 
     format arguments - coeff:
-    coeffnames = list of names to use in table (same length as coefflist) OR dictionary from name in statsmodel to name I want in the tabular (can contain superfluous names)
+    coeffnames = list of names to use in table (same length as coefflist) OR dictionary from name in statsmodel to name I want in the tabular (can contain superfluous names). This will also replace any names that appear in ynames that are in the dict.
     coeffdecimal = 3: decimal places in coefficients and standard errors
     stardict = 'def' then use default i.e. * <0.05, ** <0.01, *** < 0.001. If None/{} then do not include
 
@@ -364,8 +364,17 @@ def getsmresultstable(
         ynames = [''] + ['(' + str(i) + ')' for i in range(1, numcol + 1)]
     else:
         if isinstance(ynames, str):
+            # replace name using coeffnames dict if coeffnames is a dict containing the name
+            if isinstance(coeffnames, dict):
+                if ynames in coeffnames:
+                    ynames = coeffnames[ynames]
             ynames = [ynames] + ['(' + str(i) + ')' for i in range(1, numcol + 1)]
         else:
+            # replace name using coeffnames dict if coeffnames is a dict containing the name
+            if isinstance(coeffnames, dict):
+                for i in range(numcol):
+                    if ynames[i] in coeffnames:
+                        ynames[i] = coeffnames[ynames[i]]
             ynames = [''] + ynames
     # convert to list of lists
     ynames = [ynames]
