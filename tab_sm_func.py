@@ -167,13 +167,18 @@ def getcoefftabmatrix(
     coefflist, betamatrix, pvalmatrix, sematrix = getcoeffmatrices(sm_models, coefflist = coefflist)
 
     # get the coefflist to show in the table
-    if coeffnames is not None:
+    if coeffnames is None:
+        coeffnames = coefflist
+    else:
         if isinstance(coeffnames, list):
-            coefflist = coeffnames
+            # coeffnames is already fine
+            None
         elif isinstance(coeffnames, dict):
-            for i in range(len(coefflist)):
-                if coefflist[i] in coeffnames:
-                    coefflist[i] = coeffnames[coefflist[i]]
+            coeffnamesdict = coeffnames
+            coeffnames = copy.deepcopy(coefflist)
+            for i in range(len(coeffnames)):
+                if coeffnames[i] in coeffnamesdict:
+                    coeffnames[i] = coeffnamesdict[coeffnames[i]]
         else:
             raise ValueError('Type for coeffnames not defined.')
 
@@ -181,7 +186,7 @@ def getcoefftabmatrix(
     # also print if I want to
     coefftabmatrix = getcoefftabmatrixgen(
     # matrix inputs
-    coefflist, betamatrix, pvalmatrix, sematrix, 
+    coeffnames, betamatrix, pvalmatrix, sematrix, 
     # format otions
     stardict = stardict, coeffdecimal = coeffdecimal,
     # print options
