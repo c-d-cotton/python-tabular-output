@@ -400,7 +400,7 @@ def getsmresultstable(
     lofl_all = lofl_all + coefftabmatrix
     tabsecs_all.append(tabularconvert(coefftabmatrix))
 
-    if beforelofl is not None:
+    if betweenlofl is not None:
         lofl_all = lofl_all + betweenlofl
         tabsecs_all.append(tabularconvert(betweenlofl))
 
@@ -409,7 +409,7 @@ def getsmresultstable(
         tabsecs_all.append(tabularconvert(paramtabmatrix))
 
     if afterlofl is not None:
-        lofl_all = lofl_all + after_lofl
+        lofl_all = lofl_all + afterlofl
         tabsecs_all.append(tabularconvert(afterlofl))
 
     # full listoflists
