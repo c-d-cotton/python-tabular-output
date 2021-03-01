@@ -351,7 +351,7 @@ def getsmresultstable(
     paramdecimal = None: Can be an integer or a list. List represents decimal places for each parameter. If paramlist == 'def' then paramdecimal = 0
 
     format options - y:
-    ynames = None: Specifies how to describe the y variables. If None, then just put (1), (2), (3) etc. If string, still include the numbers but put the variable in the top left. If a list the same length as the number of columns, put name of yvar above each column.
+    ynames = None: Specifies how to describe the y variables. If None, then just put (1), (2), (3) etc. If string, still include the numbers but put the variable in the top left. If a list the same length as the number of columns + 1. If coeffnames is a dict, also replaces ynames.
 
     print options:
     printtab = False. If True then print the listoflists
@@ -377,10 +377,9 @@ def getsmresultstable(
         else:
             # replace name using coeffnames dict if coeffnames is a dict containing the name
             if isinstance(coeffnames, dict):
-                for i in range(numcol):
+                for i in range(1, numcol):
                     if ynames[i] in coeffnames:
                         ynames[i] = coeffnames[ynames[i]]
-            ynames = [''] + ynames
     # convert to list of lists
     ynames = [ynames]
 
