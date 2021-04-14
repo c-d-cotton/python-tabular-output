@@ -377,7 +377,7 @@ def getsmresultstable(
         else:
             # replace name using coeffnames dict if coeffnames is a dict containing the name
             if isinstance(coeffnames, dict):
-                for i in range(1, numcol):
+                for i in range(0, numcol):
                     if ynames[i] in coeffnames:
                         ynames[i] = coeffnames[ynames[i]]
     # convert to list of lists
