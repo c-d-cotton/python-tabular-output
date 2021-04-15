@@ -181,7 +181,7 @@ def mergetabsecs(tabsecslist, colalign = None, hlines = None, savename = None):
     """
     if hlines is None:
         hlines = []
-    if hlines is 'all':
+    if hlines == 'all':
         hlines = list(range(len(tabsecslist) + 1))
 
     tabular = ''
