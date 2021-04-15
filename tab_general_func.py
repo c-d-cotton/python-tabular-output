@@ -14,7 +14,18 @@ stardict_default = {0.05: '*', 0.01: '**', 0.001: '***'}
 def printlofl(listoflists, maxcolsize = None, numspaces = 1):
     """
     Every row and column must have same number of elements
+    Skip multicolumns to avoid issues with that
+    Won't work with multirows
     """
+
+    # skip rows with multicolumn
+    skiprows = []
+    for i in range(len(listoflists)):
+        for j in range(len(listoflists[i])):
+            if listoflists[i][j].startswith('\\multicolumn{'):
+                skiprows.append(i)
+    listoflists = [listoflists[i] for i in range(len(listoflists)) if i not in skiprows]
+
     numrow = len(listoflists)
     numcol = len(listoflists[0])
 
@@ -147,9 +158,14 @@ def tabularconvert_example_basic():
 
 
 def tabularconvert_example_multicol():
-    tabularconvert([['\\multicolumn{2}{|c|}{Cols. 1 and 2}', 'Col3'], ['Col1', 'Col2', 'Col3'], ['a', 'b', 'c'], ['1', '2', '3']], colalign = '|c|c|c|', hlines = [0, 1, 2, -1], savename = __projectdir__ / Path('temp/tabularconvert_example_multicol.tex'))
+    listoflists = [['\\multicolumn{2}{|c|}{Cols. 1 and 2}', 'Col3'], ['Col1', 'Col2', 'Col3'], ['a', 'b', 'c'], ['1', '2', '3']]
 
+    # verify printlofl works with multicolumns
+    printlofl(listoflists)
 
+    print(tabularconvert(listoflists, colalign = '|c|c|c|', hlines = [0, 1, 2, -1], savename = __projectdir__ / Path('temp/tabularconvert_example_multicol.tex')))
+
+tabularconvert_example_multicol()
 def tabularconvert_example_multirow():
     tabularconvert([['', 'Col1', 'Col2'], ['\\multirow{2}{*}{Letters}', 'a', 'b'], ['', 'A', 'B'], ['Numbers', '1', '2']], colalign = 'lcc', hlines = [0, 1, 3, -1], savename = __projectdir__ / Path('temp/tabularconvert_example_multirow.tex'))
 
