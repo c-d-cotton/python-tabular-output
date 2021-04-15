@@ -165,7 +165,7 @@ def tabularconvert_example_multicol():
 
     print(tabularconvert(listoflists, colalign = '|c|c|c|', hlines = [0, 1, 2, -1], savename = __projectdir__ / Path('temp/tabularconvert_example_multicol.tex')))
 
-tabularconvert_example_multicol()
+
 def tabularconvert_example_multirow():
     tabularconvert([['', 'Col1', 'Col2'], ['\\multirow{2}{*}{Letters}', 'a', 'b'], ['', 'A', 'B'], ['Numbers', '1', '2']], colalign = 'lcc', hlines = [0, 1, 3, -1], savename = __projectdir__ / Path('temp/tabularconvert_example_multirow.tex'))
 
