@@ -170,6 +170,34 @@ def tabularconvert_example_multirow():
     tabularconvert([['', 'Col1', 'Col2'], ['\\multirow{2}{*}{Letters}', 'a', 'b'], ['', 'A', 'B'], ['Numbers', '1', '2']], colalign = 'lcc', hlines = [0, 1, 3, -1], savename = __projectdir__ / Path('temp/tabularconvert_example_multirow.tex'))
 
 
+# Other Basic Latex Create:{{{1
+def genbasicmatrix(matrix, matrixname = 'pmatrix', decimalpoints = None):
+    import numpy as np
+
+    # convert a list to a list of lists
+    # so a list is printed as a vector
+    # don't think need nparray part
+    # if isinstance(matrix[0], (str, float, int)) and not isinstance(matrix[0], np.ndarray):
+    if isinstance(matrix[0], (str, float, int)):
+        matrix = [[matrix[i]] for i in range(0, len(matrix))]
+
+    # convert decimal points
+    if decimalpoints is not None:
+        matrix = convertformatnumericmatrix(matrix, decimalpoints = decimalpoints)
+    output = '\\begin{' + matrixname + '}\n'
+    for i in range(0, len(matrix)):
+        for j in range(0, len(matrix[0])):
+            output = output + str(matrix[i][j])
+
+            if j != (len(matrix[0]) - 1):
+                output = output + ' & '
+        output = output + ' \\\\\n'
+
+    output = output + '\\end{' + matrixname + '}\n'
+
+    return(output)
+            
+
 # Merge Tabular Sections:{{{1
 def mergetabsecs(tabsecslist, colalign = None, hlines = None, savename = None):
     """
