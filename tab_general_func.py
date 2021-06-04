@@ -171,6 +171,51 @@ def tabularconvert_example_multirow():
 
 
 # Other Basic Latex Create:{{{1
+def convertformatnumericmatrix(matrix, decimalpoints = None):
+    """
+    Convert into a numeric matrix and add decimals.
+
+    Can input in three forms:
+        Integer (all elements in matrix have the number of decimals of the integer).
+        List of length of number of rows (all elements in row have number of decimals of corresponding point in list)
+        List of lists of same dimension as matrix.
+
+    Can also specify that some elements ignored i.e. [None, 3]
+
+    Note that decimalpoints = 0 gives integers.
+
+    Give default argument of decimalpoints as None since easier to work with argparse.
+    """
+    import decimal
+
+    # if decimalpoints is None:
+    #     decimalpoints = coeffdecimal_default
+    
+    if not isinstance(decimalpoints, list):
+        decimalpoints = [decimalpoints] * len(matrix)
+
+    # for col in range(0, len(matrix[0])):
+    #     if decimalpoints[col] is None:
+    #         continue
+    #     for row in range(0, len(matrix)):
+    #         # ignore blank space since want option to be able to include nothing in row/column of matrix i.e. regression where don't include coefficient
+    #         if matrix[row][col] != "":
+    #             matrix[row][col] = round(decimal.Decimal(matrix[row][col]), decimalpoints[col])
+
+    if not isinstance(decimalpoints[0], list):
+        for i in range(len(decimalpoints)):
+            decimalpoints[i] = [decimalpoints[i]] * len(matrix[i])
+
+    for row in range(0, len(matrix)):
+        for col in range(0, len(matrix[0])):
+            # ignore blank space since want option to be able to include nothing in row/column of matrix i.e. regression where don't include coefficient
+            if decimalpoints[row][col] is None or matrix[row][col] == "":
+                continue
+            matrix[row][col] = round(decimal.Decimal(matrix[row][col]), decimalpoints[row][col])
+
+    return(matrix)
+            
+    
 def genbasicmatrix(matrix, matrixname = 'pmatrix', decimalpoints = None):
     import numpy as np
 
