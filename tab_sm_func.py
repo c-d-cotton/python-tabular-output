@@ -42,12 +42,15 @@ def getmodelstest():
 def getcoeffmatrices(sm_models, coefflist = None):
     """
     sm_models should be a list of model.fit() from statsmodels
+    Allow for models to be None (may be useful when doing multiple panels)
     """
 
     # get coefflist if coefflist is None
     if coefflist is None:
         coefflist = []
         for model in sm_models:
+            if model is None:
+                continue
             coeffs = list(model.params.index)
             for coeff in coeffs:
                 if coeff not in coefflist:
@@ -66,6 +69,8 @@ def getcoeffmatrices(sm_models, coefflist = None):
     sematrix = copy.deepcopy(betamatrix)
 
     for col in range(numcol):
+        if sm_models[col] is None:
+            continue
         betas = list(sm_models[col].params)
         pvals = list(sm_models[col].pvalues)
         ses = list(sm_models[col].bse)
@@ -113,7 +118,10 @@ def getparammatrix(sm_models, paramlist = 'def'):
 
     for col in range(numcol):
         for row in range(numrow):
-            parammatrix[row][col] = getattr(sm_models[col], paramlist[row])
+            if sm_models[col] is None:
+                parammatrix[row][col] = None
+            else:
+                parammatrix[row][col] = getattr(sm_models[col], paramlist[row])
 
     return(paramlist, parammatrix)
 
@@ -281,7 +289,10 @@ def getparamtabmatrix(
     # apply decimals
     for i in range(numrow):
         for j in range(numcol):
-            parammatrix[i][j] = str(round(decimal.Decimal(parammatrix[i][j]), paramdecimal[i]))
+            if parammatrix[i][j] is None:
+                parammatrix[i][j] = ''
+            else:
+                parammatrix[i][j] = str(round(decimal.Decimal(parammatrix[i][j]), paramdecimal[i]))
 
     # add in index column
     for i in range(numrow):
