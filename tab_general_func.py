@@ -22,7 +22,7 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1):
     skiprows = []
     for i in range(len(listoflists)):
         for j in range(len(listoflists[i])):
-            if listoflists[i][j].startswith('\\multicolumn{'):
+            if isinstance(listoflists[i][j], str) and listoflists[i][j].startswith('\\multicolumn{'):
                 skiprows.append(i)
     listoflists = [listoflists[i] for i in range(len(listoflists)) if i not in skiprows]
 
