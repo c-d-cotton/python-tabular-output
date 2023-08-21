@@ -39,7 +39,7 @@ def getmodelstest():
 
 
 # Get Matrices from Model List:{{{1
-def getcoeffmatrices(sm_models, coefflist = None):
+def getcoeffmatrices(sm_models, coefflist = None, coefflist_dropdummies = False):
     """
     sm_models should be a list of model.fit() from statsmodels
     """
@@ -52,8 +52,11 @@ def getcoeffmatrices(sm_models, coefflist = None):
             for coeff in coeffs:
                 if coeff not in coefflist:
                     coefflist.append(coeff)
-
+        if coefflist_dropdummies is True:
+            coefflist = [coeff for coeff in coefflist if 'C(' not in coeff]
     numrow = len(coefflist)
+    if len(sm_models) == 0:
+        raise ValueError('No models specified.')
     numcol = len(sm_models)
 
     # create empty list
@@ -130,7 +133,7 @@ def getparammatrix_test():
 # Adjust Matrices:{{{1
 def getcoefftabmatrix(
     # coeff matrices arguments
-    sm_models, coefflist = None,
+    sm_models, coefflist = None, coefflist_dropdummies = False,
     # format options
     coeffnames = None, coeffdecimal = 3, stardict = 'def',
     # print options
@@ -164,7 +167,7 @@ def getcoefftabmatrix(
     """
 
     # get matrices
-    coefflist, betamatrix, pvalmatrix, sematrix = getcoeffmatrices(sm_models, coefflist = coefflist)
+    coefflist, betamatrix, pvalmatrix, sematrix = getcoeffmatrices(sm_models, coefflist = coefflist, coefflist_dropdummies = coefflist_dropdummies)
 
     # get the coefflist to show in the table
     if coeffnames is None:
@@ -202,6 +205,7 @@ def getcoefftabmatrix(
 
 def getcoefftabmatrix_test():
     coefflist = None
+    coefflist_dropdummies = False
     # coefflist = ['x2', 'x1']
 
     coeffnames = {'x1': 'x1_var', 'x2': 'x2_var2', 'x3': 'x3_var3'}
@@ -218,7 +222,7 @@ def getcoefftabmatrix_test():
 
     coefftabmatrix = getcoefftabmatrix(
     # coeff matrices arguments
-    models, coefflist = coefflist,
+    models, coefflist = coefflist, coefflist_dropdummies = coefflist_dropdummies,
     # format options
     coeffnames = coeffnames, coeffdecimal = coeffdecimal, stardict = stardict,
     # print options
@@ -242,7 +246,8 @@ def getparamtabmatrix(
     """
     matrix arguments:
     sm_models: a list of statsmodels.fit() models
-    paramlist = 'def': list of properties of the fit() method that I wish to include in the parameter table e.g. nobs, ess, aic. If None, include nothing. If 'def', include 'nobs'
+    paramlist = 'def': list of properties of the fit() method that I wish to include in the parameter table e.g. nobs, ess, aic, rsquared. If None, include nothing. If 'def', include 'nobs'
+    For list of parameters see: https://www.statsmodels.org/dev/generated/statsmodels.regression.linear_model.RegressionResults.html#statsmodels.regression.linear_model.RegressionResults
 
     format arguments:
     paramnames = None: Names for the parameters that I'll put in tabular. If paramlist == 'def' then equals N.
@@ -321,7 +326,7 @@ def getparamtabmatrix_test():
 # getparamtabmatrix_test()
 def getsmresultstable(
     # matrices arguments
-    sm_models, coefflist = None, paramlist = 'def',
+    sm_models, coefflist = None, coefflist_dropdummies = False, paramlist = 'def',
     # format options - coeff
     coeffnames = None, coeffdecimal = 3, stardict = 'def',
     # format options - param
@@ -339,7 +344,7 @@ def getsmresultstable(
     coeff matrix arguments:
     sm_models: list of statsmodels.fit()
     coefflist = list of variables to show in the tabsec
-    paramlist = 'def': list of properties of the fit() method that I wish to include in the parameter table e.g. nobs, ess, aic. If None, include nothing. If 'def', include 'nobs'
+    paramlist = 'def': list of properties of the fit() method that I wish to include in the parameter table e.g. nobs, ess, aic. If None, include nothing. If 'def', include 'nobs'. Example: ['nobs', 'rsquared'].
 
     format arguments - coeff:
     coeffnames = list of names to use in table (same length as coefflist) OR dictionary from name in statsmodel to name I want in the tabular (can contain superfluous names). This will also replace any names that appear in ynames that are in the dict.
@@ -347,7 +352,7 @@ def getsmresultstable(
     stardict = 'def' then use default i.e. * <0.05, ** <0.01, *** < 0.001. If None/{} then do not include
 
     format arguments - param:
-    paramnames = None: Names for the parameters that I'll put in tabular. If paramlist == 'def' then equals N.
+    paramnames = None: Names for the parameters that I'll put in tabular. If paramlist == 'def' then equals N. 
     paramdecimal = None: Can be an integer or a list. List represents decimal places for each parameter. If paramlist == 'def' then paramdecimal = 0
 
     format options - y:
@@ -366,27 +371,30 @@ def getsmresultstable(
 
     # GET YNAMES
     if ynames is None:
-        ynames = [''] + ['(' + str(i) + ')' for i in range(1, numcol + 1)]
+        ynames = [[''] + ['(' + str(i) + ')' for i in range(1, numcol + 1)]]
     else:
+        # can input ynames as a string/list/list of lists
+        # ultimately want to output a list of lists
         if isinstance(ynames, str):
             # replace name using coeffnames dict if coeffnames is a dict containing the name
             if isinstance(coeffnames, dict):
                 if ynames in coeffnames:
                     ynames = coeffnames[ynames]
-            ynames = [ynames] + ['(' + str(i) + ')' for i in range(1, numcol + 1)]
-        else:
+            ynames = [[ynames] + ['(' + str(i) + ')' for i in range(1, numcol + 1)]]
+        elif isinstance(ynames[0], str):
             # replace name using coeffnames dict if coeffnames is a dict containing the name
             if isinstance(coeffnames, dict):
                 for i in range(0, numcol):
                     if ynames[i] in coeffnames:
                         ynames[i] = coeffnames[ynames[i]]
-    # convert to list of lists
-    ynames = [ynames]
+            ynames = [ynames]
+        else:
+            None
 
     # GET COEFFTABMATRIX
     coefftabmatrix = getcoefftabmatrix(
     # coeff matrices arguments
-    sm_models, coefflist = coefflist,
+    sm_models, coefflist = coefflist, coefflist_dropdummies = coefflist_dropdummies,
     # format options
     coeffnames = coeffnames, coeffdecimal = coeffdecimal, stardict = stardict,
     )
