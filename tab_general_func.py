@@ -8,7 +8,7 @@ import sys
 __projectdir__ = Path(os.path.dirname(os.path.realpath(__file__)) + '/')
 
 # Defaults:{{{1
-stardict_default = {0.05: '*', 0.01: '**', 0.001: '***'}
+stardict_default = {0.1, '$^{+}$', 0.05: '*', 0.01: '**', 0.001: '***'}
 
 # Print List of Lists:{{{1
 def printlofl(listoflists, maxcolsize = None, numspaces = 1):

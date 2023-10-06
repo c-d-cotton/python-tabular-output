@@ -395,7 +395,7 @@ def getsmresultstable(
         elif isinstance(ynames[0], str):
             # replace name using coeffnames dict if coeffnames is a dict containing the name
             if isinstance(coeffnames, dict):
-                for i in range(0, numcol):
+                for i in range(0, numcol + 1):
                     if ynames[i] in coeffnames:
                         ynames[i] = coeffnames[ynames[i]]
             ynames = [ynames]
