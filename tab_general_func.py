@@ -9,6 +9,7 @@ __projectdir__ = Path(os.path.dirname(os.path.realpath(__file__)) + '/')
 
 # Defaults:{{{1
 stardict_default = {0.1: '$^{+}$', 0.05: '*', 0.01: '**', 0.001: '***'}
+stardict_default2 = {0.05: '*', 0.01: '**', 0.001: '***'}
 
 # Print List of Lists:{{{1
 def printlofl(listoflists, maxcolsize = None, numspaces = 1):
@@ -239,8 +240,12 @@ def getcoefftabmatrixgen(
     printtab: print out the listoflists
     printmaxcolsize = None then just use actual length. If [None, 10] then no restriction on first column but second is shortened to 10 characters long
     """
+    # include 0.1
     if stardict == 'def':
         stardict = stardict_default
+    # do not include 0.1
+    if stardict == 'def2':
+        stardict = stardict_default2
 
     # verify coefftablenames same length as number of rows in betamatrix
     if len(coeffnames) != len(betamatrix):
