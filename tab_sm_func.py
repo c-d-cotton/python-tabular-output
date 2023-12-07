@@ -107,6 +107,8 @@ def getcoeffmatrices_test():
 # getcoeffmatrices_test()
 def getparammatrix(sm_models, paramlist = 'def'):
     if paramlist == 'def':
+        paramlist = ['nobs', 'rsquared']
+    if paramlist == 'nor2':
         paramlist = ['nobs']
     if paramlist is None:
         paramlist = []
@@ -269,6 +271,10 @@ def getparamtabmatrix(
     
     """
     if paramlist == 'def':
+        paramlist = ['nobs', 'rsquared']
+        paramnames = ['N', '$R^2$']
+        paramdecimal = [0, 3]
+    if paramlist == 'nor2':
         paramlist = ['nobs']
         paramnames = ['N']
         paramdecimal = [0]
