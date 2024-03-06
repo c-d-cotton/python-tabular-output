@@ -76,7 +76,14 @@ def getcoeffmatrices(sm_models, coefflist = None, coefflist_dropdummies = False)
             continue
         betas = list(sm_models[col].params)
         pvals = list(sm_models[col].pvalues)
-        ses = list(sm_models[col].bse)
+        # statsmodels sets std as bse in the model results
+        # linearmodels sets std as std_errors in the model results
+        # allow for difference
+        try:
+            ses = list(sm_models[col].std_errors)
+        except Exception:
+            ses = list(sm_models[col].bse)
+        coeffs = list(sm_models[col].params.index)
         coeffs = list(sm_models[col].params.index)
         for thisregi in range(len(betas)):
             coeff = coeffs[thisregi]
