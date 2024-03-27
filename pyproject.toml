@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "python_tabular_output"
+version = "0.1.0"
+description = "Functions to create Latex tables (tabular) in Python both for basic matrices and for the output of statsmodels regressions"
+authors = ["Christopher Cotton"]
+maintainers = ["Christopher Cotton"]
+readme = "README.md"
+homepage = "https://github.com/c-d-cotton/python-tabular-output"
+repository = "https://github.com/c-d-cotton/python-tabular-output"
+documentation = "https://github.com/c-d-cotton/python-tabular-output"
+keywords = ["python", "time", "utilities"]
+classifiers = [
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Utilities",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/c-d-cotton/python-tabular-output/issues"
+
+[tool.poetry.dependencies]
+pandas = "^2.1.4"
+statsmodels = "^0.14.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

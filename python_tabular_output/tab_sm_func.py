@@ -12,10 +12,10 @@ import sys
 __projectdir__ = Path(os.path.dirname(os.path.realpath(__file__)) + '/')
 
 
-from tab_general_func import printlofl
-from tab_general_func import tabularconvert
-from tab_general_func import mergetabsecs
-from tab_general_func import getcoefftabmatrixgen
+from .tab_general_func import printlofl
+from .tab_general_func import tabularconvert
+from .tab_general_func import mergetabsecs
+from .tab_general_func import getcoefftabmatrixgen
 
 # Test Auxilliary Functions:{{{1
 def getmodelstest():
