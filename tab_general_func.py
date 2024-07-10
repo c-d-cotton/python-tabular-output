@@ -3,6 +3,7 @@
 import decimal
 import os
 from pathlib import Path
+import re
 import sys
 
 __projectdir__ = Path(os.path.dirname(os.path.realpath(__file__)) + '/')
@@ -12,23 +13,51 @@ stardict_default = {0.1: '$^{+}$', 0.05: '*', 0.01: '**', 0.001: '***'}
 stardict_noplus = {0.05: '*', 0.01: '**', 0.001: '***'}
 
 # Print List of Lists:{{{1
-def printlofl(listoflists, maxcolsize = None, numspaces = 1):
+def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = False):
     """
     Every row and column must have same number of elements
-    Skip multicolumns to avoid issues with that
     Won't work with multirows
+
+    skipmulticol = True means skip rows with multicol in (might be good if those cells are very long)
     """
 
-    # skip rows with multicolumn
-    skiprows = []
-    for i in range(len(listoflists)):
-        for j in range(len(listoflists[i])):
-            if isinstance(listoflists[i][j], str) and listoflists[i][j].startswith('\\multicolumn{'):
-                skiprows.append(i)
-    listoflists = [listoflists[i] for i in range(len(listoflists)) if i not in skiprows]
+    if skipmulticol is True:
+        # skip rows with multicolumn
+        skiprows = []
+        for i in range(len(listoflists)):
+            for j in range(len(listoflists[i])):
+                if isinstance(listoflists[i][j], str) and listoflists[i][j].startswith('\\multicolumn{'):
+                    skiprows.append(i)
+        listoflists = [listoflists[i] for i in range(len(listoflists)) if i not in skiprows]
+    else:
+        multicolre = re.compile('\\\\multicolumn{(.*?)}{.*?}{(.*?)}')
+        # adjust rows with multicolumn
+        # remove multicolumn command and 
+        for i in range(len(listoflists)):
+            for j in range(len(listoflists[i])):
+                match = multicolre.search(listoflists[i][j])
+                if isinstance(listoflists[i][j], str) and match is not None:
+                    try:
+                        skipcolnum = int(match.group(1)) - 1
+                    except Exception:
+                        print('Warning multicolumn probably misspecified. Should have integer in first bracket: ' + listoflists[i][j] + '.')
+                        skipcolnum = None
+                    listoflists[i][j] = match.group(2)
+                    if skipcolnum is not None and skipcolnum > 0:
+                        # add missing columns if skipcolnum > 0
+                        listoflists[i] = listoflists[i][: j + 1] + [''] * skipcolnum + listoflists[i][j + 1: ]
 
     numrow = len(listoflists)
     numcol = len(listoflists[0])
+
+    # verify each row has correct number of columns
+    # return warning and fill in if not
+    for i in range(len(listoflists)):
+        if len(listoflists[i]) != numcol:
+            print('Wrong number of columns in row ' + str(i) + ' (starting from 0). Should be ' + str(numcol) + ' based on first row:')
+            print(listoflists[i])
+            if len(listoflists[i]) < numcol:
+                listoflists[i] = listoflists[i] + [''] * (numcol - len(listoflists[i]))
 
     # convert maxcolsize to list
     if not isinstance(maxcolsize, list):
@@ -68,10 +97,11 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1):
     
 def printlofl_test_basic():
     listoflists = [['hello', 'goodbye'], ['1', '2']]
-    
     printlofl(listoflists, None)
-
     printlofl(listoflists, [10, 3])
+
+    listoflists = [['\\multicolumn{2}{cc}{Hello}', 'Goodbye'], ['1', '2', '3']]
+    printlofl(listoflists, None)
 
 
 # Basic Tabular Create:{{{1
@@ -82,8 +112,8 @@ def replaceunderscores(texttoreplace):
 
     # replacing underscores
     adjusted = texttoreplace
-    adjusted = adjusted.replace('\$', '00')
-    adjusted = adjusted.replace('\_', '00')
+    adjusted = adjusted.replace('\\$', '00')
+    adjusted = adjusted.replace('\\_', '00')
     ignoreunderscore = False
     replacecharacters = []
     for i in range(0, len(adjusted)):
@@ -109,7 +139,7 @@ def tabularconvert(listoflists, colalign = None, hlines = None, savename = None)
     If colalign given, create full tabular
     hlines is something like [0, 1, -1]. 0 means there's an hline before the first line, 1 means there's an hline before the second line, -1 means there's an hline before the last line. Default: []
 
-    Note that I can include \multicolumn{2}{c}{Multi-column} directly as an element in the lists
+    Note that I can include \\multicolumn{2}{c}{Multi-column} directly as an element in the lists
     """
     if hlines is None:
         hlines = []
