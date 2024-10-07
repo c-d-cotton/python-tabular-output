@@ -48,16 +48,36 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
                         listoflists[i] = listoflists[i][: j + 1] + [''] * skipcolnum + listoflists[i][j + 1: ]
 
     numrow = len(listoflists)
-    numcol = len(listoflists[0])
+    # get numcol - can't just use first row if have multicolumn
+    stopthis = False
+    for i in range(0, numrow):
+        multicol = False
+        for element in listoflists[i]:
+            if '\\multicolumn' in element:
+                multicol = True
+                break
+        if multicol is True:
+            continue
+        else:
+            numcol = len(listoflists[i])
+            stopthis = True
+            break
+    if stopthis is False:
+        raise ValueError('Every row of listoflists has multicolumn so cannot get numcol.')
 
     # verify each row has correct number of columns
     # return warning and fill in if not
     for i in range(len(listoflists)):
         if len(listoflists[i]) != numcol:
-            print('Wrong number of columns in row ' + str(i) + ' (starting from 0). Should be ' + str(numcol) + ' based on first row:')
-            print(listoflists[i])
             if len(listoflists[i]) < numcol:
                 listoflists[i] = listoflists[i] + [''] * (numcol - len(listoflists[i]))
+            multicol = False
+            for element in listoflists[i]:
+                if '\\multicolumn' in element:
+                    multicol = True
+            if multicol is False:
+                print('Wrong number of columns in row ' + str(i) + ' (starting from 0). Should be ' + str(numcol) + ' based on first row:')
+                print(listoflists[i])
 
     # convert maxcolsize to list
     if not isinstance(maxcolsize, list):
