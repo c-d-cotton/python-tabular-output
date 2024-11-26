@@ -35,6 +35,8 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
         # remove multicolumn command and 
         for i in range(len(listoflists)):
             for j in range(len(listoflists[i])):
+                if not isinstance(listoflists[i][j], str):
+                    continue
                 match = multicolre.search(listoflists[i][j])
                 if isinstance(listoflists[i][j], str) and match is not None:
                     try:
