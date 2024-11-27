@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import decimal
 import os
 from pathlib import Path
@@ -21,6 +22,9 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
     skipmulticol = True means skip rows with multicol in (might be good if those cells are very long)
     """
 
+    # so don't make adjustments to underlying listoflists
+    listoflists = copy.deepcopy(listoflists)
+
     if skipmulticol is True:
         # skip rows with multicolumn
         skiprows = []
@@ -34,7 +38,9 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
         # adjust rows with multicolumn
         # remove multicolumn command and 
         for i in range(len(listoflists)):
-            for j in range(len(listoflists[i])):
+            # do with while loop since I add in additional elements when there is a multicol
+            j = 0
+            while j < len(listoflists[i]):
                 if not isinstance(listoflists[i][j], str):
                     continue
                 match = multicolre.search(listoflists[i][j])
@@ -48,6 +54,7 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
                     if skipcolnum is not None and skipcolnum > 0:
                         # add missing columns if skipcolnum > 0
                         listoflists[i] = listoflists[i][: j + 1] + [''] * skipcolnum + listoflists[i][j + 1: ]
+                j+=1
 
     numrow = len(listoflists)
     # get numcol - can't just use first row if have multicolumn
