@@ -42,6 +42,7 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
             j = 0
             while j < len(listoflists[i]):
                 if not isinstance(listoflists[i][j], str):
+                    j+=1
                     continue
                 match = multicolre.search(listoflists[i][j])
                 if isinstance(listoflists[i][j], str) and match is not None:
