@@ -63,7 +63,7 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
     for i in range(0, numrow):
         multicol = False
         for element in listoflists[i]:
-            if '\\multicolumn' in element:
+            if isinstance(element, str) and '\\multicolumn' in element:
                 multicol = True
                 break
         if multicol is True:
