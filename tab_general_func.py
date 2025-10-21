@@ -34,7 +34,8 @@ def printlofl(listoflists, maxcolsize = None, numspaces = 1, skipmulticol = Fals
                     skiprows.append(i)
         listoflists = [listoflists[i] for i in range(len(listoflists)) if i not in skiprows]
     else:
-        multicolre = re.compile('\\\\multicolumn{(.*?)}{.*?}{(.*?)}')
+        # note make max match in last {} which means I cover "$I_{2y}$" rather than stopping at "$I_{2y"
+        multicolre = re.compile('\\\\multicolumn{(.*?)}{.*?}{(.*)}')
         # adjust rows with multicolumn
         # remove multicolumn command and 
         for i in range(len(listoflists)):
